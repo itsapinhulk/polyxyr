@@ -38,6 +38,22 @@ done
 log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33mwarn:\033[0m %s\n' "$*" >&2; }
 
+# Refuse to publish a commit that isn't the tagged release: the current commit
+# must carry the tag `v<version>` matching the manifest version. (Requires tags
+# to be present locally — checkout with fetch-tags/fetch-depth: 0.)
+verify_tagged() {
+    local version tag
+    version="$(sed -n 's/^version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
+        "$RUST_DIR/Cargo.toml" | head -n1)"
+    tag="v$version"
+    if ! git -C "$REPO_ROOT" tag --points-at HEAD | grep -qx "$tag"; then
+        echo "error: HEAD is not tagged $tag — refusing to publish version $version" >&2
+        echo "       tags on HEAD: $(git -C "$REPO_ROOT" tag --points-at HEAD | paste -sd' ' -)" >&2
+        exit 1
+    fi
+    log "verified HEAD is tagged $tag"
+}
+
 publish_rust() {
     log "Rust crate: $RUST_DIR"
     if ! command -v cargo >/dev/null 2>&1; then
@@ -72,6 +88,11 @@ publish_python() {
         ( cd "$PY_DIR" && uv publish )
     fi
 }
+
+# A real publish must come from the tagged commit; dry-runs may run anywhere.
+if [ "$DRY_RUN" -eq 0 ]; then
+    verify_tagged
+fi
 
 rc=0
 case "$TARGET" in
