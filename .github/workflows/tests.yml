@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - name: cargo test
+      - name: cargo test  # rustup/cargo are preinstalled on ubuntu-latest
         working-directory: src/rust
         run: cargo test --all-features
