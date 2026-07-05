@@ -2,9 +2,11 @@
 #
 # tag.sh — read the package version and create an annotated git tag
 # `v<version>`, then push it (pushing a `v*` tag is what triggers the publish
-# workflow).
+# workflow). When tagging a minor release (YYYY.XX.0) it also creates the
+# `release-vYYYY.XX` branch that later patch releases are tagged from.
 #
-# Assumes the Rust and Python versions already match; run check-versions.sh
+# Assumes the Rust and Python versions already match, and that the current
+# branch is valid for the version; run check-versions.sh / check-release-branch.sh
 # first if you need to confirm that.
 #
 # Usage:
@@ -43,9 +45,27 @@ fi
 echo "==> creating tag $TAG"
 git tag -a "$TAG" -m "polyxyr $VERSION"
 
+# A minor release (YYYY.XX.0) opens a release-vYYYY.XX branch for its patches.
+# 10# forces base 10 so a zero-padded patch isn't parsed as octal.
+IFS=. read -r year minor patch <<<"$VERSION"
+BRANCH=""
+if [ "$((10#$patch))" -eq 0 ]; then
+    BRANCH="release-v$year.$minor"
+    if git rev-parse -q --verify "refs/heads/$BRANCH" >/dev/null; then
+        echo "error: branch $BRANCH already exists" >&2
+        exit 1
+    fi
+    echo "==> creating release branch $BRANCH"
+    git branch "$BRANCH" "$TAG"
+fi
+
 if [ "$PUSH" -eq 1 ]; then
     echo "==> pushing tag $TAG"
     git push origin "$TAG"
+    if [ -n "$BRANCH" ]; then
+        echo "==> pushing release branch $BRANCH"
+        git push origin "$BRANCH"
+    fi
 else
-    echo "==> --no-push set; tag created locally only"
+    echo "==> --no-push set; tag${BRANCH:+ and branch $BRANCH} created locally only"
 fi

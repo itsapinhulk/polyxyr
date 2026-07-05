@@ -11,8 +11,10 @@ permissions:
 
 jobs:
   tag:
-    # workflow_dispatch has no branch filter; only allow cutting a tag from main.
-    if: github.ref == 'refs/heads/main'
+    # workflow_dispatch has no branch filter; only allow main (minor releases)
+    # and release-v* branches (patch releases). check-release-branch.sh enforces
+    # which version each branch may tag.
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release-v')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,6 +23,9 @@ jobs:
 
       - name: Verify Rust and Python versions match
         run: scripts/check-versions.sh
+
+      - name: Verify branch is valid for this version
+        run: scripts/check-release-branch.sh
 
       - name: Configure git
         run: |
