@@ -1,0 +1,17 @@
+name: check
+
+# Catch Rust/Python version drift on the branch, before a release is tagged.
+on:
+  push:
+    branches: []
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-versions:
+    name: check versions match
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Rust and Python versions match
+        run: scripts/check-versions.sh

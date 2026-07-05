@@ -1,0 +1,33 @@
+name: publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  python:
+    name: publish (python → PyPI)
+    runs-on: ubuntu-latest
+    environment: PyPI
+    permissions:
+      id-token: write  # OIDC token for PyPI trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Publish to PyPI
+        env:
+          TRUSTED_PUBLISHING: "1"  # use OIDC instead of a token
+        run: scripts/publish.sh python
+
+  rust:
+    name: publish (rust → crates.io)
+    runs-on: ubuntu-latest
+    environment: crates.io
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Publish to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: scripts/publish.sh rust
