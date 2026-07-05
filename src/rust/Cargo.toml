@@ -1,6 +1,6 @@
 [package]
 name = "polyxyr"
-version = "2026.02.0"
+version = "2026.03.0"
 edition = "2021"
 rust-version = "1.70"
 description = "A collection of useful utilities"
@@ -8,7 +8,7 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/itsapinhulk/polyxyr"
 homepage = "https://github.com/itsapinhulk/polyxyr"
-authors = ["Pulkit Sinha <pulkitsinha@gmail.com>"]
+authors = ["Pulkit Sinha"]
 keywords = ["utilities"]
 categories = ["development-tools"]
 
