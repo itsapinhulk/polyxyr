@@ -2,4 +2,7 @@
 
 A collection of useful utilities.
 
-See <https://github.com/itsapinhulk/polyxyr>.
+## Packages
+
+- [Rust crate](src/rust/README.md) — `src/rust`
+- [Python package](src/python/README.md) — `src/python`
