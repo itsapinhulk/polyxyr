@@ -28,8 +28,7 @@ IFS=. read -r year minor patch <<<"$VERSION"
 
 BRANCH="${GITHUB_REF_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
 
-# 10# forces base 10 so a zero-padded patch isn't parsed as octal.
-if [ "$((10#$patch))" -eq 0 ]; then
+if [ "$patch" -eq 0 ]; then
     expected="main"
 else
     expected="release-v$year.$minor"

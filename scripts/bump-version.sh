@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
 # bump-version.sh — set the package version using CalVer `YYYY.XX.PATCH`, where
-# XX is the zero-padded release number within the year (starts at 01 each year),
-# and write it into both manifests (src/rust/Cargo.toml, src/python/pyproject.toml).
+# XX is the release number within the year (starts at 1 each year), and write it
+# into both manifests (src/rust/Cargo.toml, src/python/pyproject.toml).
 #
 # Usage:
 #   scripts/bump-version.sh [minor]     # next release this year: YYYY.(XX+1).0
-#                                        #   (or YYYY.01.0 when the year rolled over)
+#                                        #   (or YYYY.1.0 when the year rolled over)
 #   scripts/bump-version.sh patch       # patch the current release: YYYY.XX.(PATCH+1)
 #   scripts/bump-version.sh <version>   # set an explicit YYYY.XX.PATCH
 #
@@ -47,20 +47,19 @@ IFS=. read -r cy cx cp <<<"$CUR"
 
 case "$MODE" in
     minor)
-        # 10# forces base 10 so a zero-padded XX (e.g. 09) isn't read as octal.
         if [ "$cy" = "$YEAR" ]; then
-            next=$((10#$cx + 1))
+            next=$((cx + 1))
         else
             next=1
         fi
-        NEW="$YEAR.$(printf '%02d' "$next").0"
+        NEW="$YEAR.$next.0"
         ;;
     patch)
         if [ "$cy" != "$YEAR" ]; then
             echo "error: current version $CUR is not from $YEAR; cut a 'minor' instead" >&2
             exit 1
         fi
-        NEW="$cy.$cx.$((10#$cp + 1))"
+        NEW="$cy.$cx.$((cp + 1))"
         ;;
     *)
         # explicit version — must be YYYY.XX.PATCH (all numeric)

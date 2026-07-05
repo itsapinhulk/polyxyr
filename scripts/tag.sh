@@ -46,10 +46,9 @@ echo "==> creating tag $TAG"
 git tag -a "$TAG" -m "polyxyr $VERSION"
 
 # A minor release (YYYY.XX.0) opens a release-vYYYY.XX branch for its patches.
-# 10# forces base 10 so a zero-padded patch isn't parsed as octal.
 IFS=. read -r year minor patch <<<"$VERSION"
 BRANCH=""
-if [ "$((10#$patch))" -eq 0 ]; then
+if [ "$patch" -eq 0 ]; then
     BRANCH="release-v$year.$minor"
     if git rev-parse -q --verify "refs/heads/$BRANCH" >/dev/null; then
         echo "error: branch $BRANCH already exists" >&2
