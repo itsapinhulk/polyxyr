@@ -1,0 +1,25 @@
+[project]
+name = "polyxyr"
+version = "0.0.1"
+description = "A collection of useful utilities"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{ name = "Pulkit Sinha", email = "pulkitsinha@gmail.com" }]
+keywords = ["utilities"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/itsapinhulk/polyxyr"
+Repository = "https://github.com/itsapinhulk/polyxyr"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/polyxyr"]

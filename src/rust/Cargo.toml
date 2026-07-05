@@ -1,0 +1,17 @@
+[package]
+name = "polyxyr"
+version = "0.0.1"
+edition = "2021"
+rust-version = "1.70"
+description = "A collection of useful utilities"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/itsapinhulk/polyxyr"
+homepage = "https://github.com/itsapinhulk/polyxyr"
+authors = ["Pulkit Sinha <pulkitsinha@gmail.com>"]
+keywords = ["utilities"]
+categories = ["development-tools"]
+
+[lib]
+name = "polyxyr"
+path = "src/lib.rs"
