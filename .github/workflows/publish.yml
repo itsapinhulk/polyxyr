@@ -4,16 +4,26 @@ on:
   push:
     tags:
       - "v*"
+  # A tag pushed in CI with GITHUB_TOKEN can't trigger the push event above,
+  # so also run after the tag workflow succeeds.
+  workflow_run:
+    workflows: ["tag"]
+    types: [completed]
 
 jobs:
   python:
     name: publish (python → PyPI)
     runs-on: ubuntu-latest
     environment: PyPI
+    # Only publish on a direct tag push, or when the tag workflow succeeded.
+    if: github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
     permissions:
       id-token: write  # OIDC token for PyPI trusted publishing
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Build the tagged commit, not whatever main is now.
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
       - uses: astral-sh/setup-uv@v5
       - name: Publish to PyPI
         env:
@@ -24,8 +34,11 @@ jobs:
     name: publish (rust → crates.io)
     runs-on: ubuntu-latest
     environment: crates.io
+    if: github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
       - name: Publish to crates.io  # rustup/cargo are preinstalled on ubuntu-latest
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
